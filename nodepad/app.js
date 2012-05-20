@@ -4,14 +4,16 @@
  */
 
 var express = require('express')
-  , routes = require('./routes/documents')
-  , mongoose = require('mongoose');
+  , routes = require('./routes/index')
+  , routes_doc = require('./routes/documents')
+  , mongoose = require('mongoose')
+  , db
+  , Document;
 
 var app = module.exports = express.createServer();
-var db = mongoose.connect('mongodb://localhost/nodepad');
 
-require('./models.js');
-Document = mongoose.model('Document');
+require('./models');
+app.Document = Document = mongoose.model('Document');
 
 // Configuration
 
@@ -21,46 +23,45 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
+  app.use(express.compiler({ src: __dirname + '/public', enable: ['less'] }));
   app.use(express.static(__dirname + '/public'));
+});
+
+app.configure('test', function(){
+  app.use(express.logger());
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  db = mongoose.connect('mongodb://localhost/nodepad-test');
 });
 
 app.configure('development', function(){
   app.use(express.logger());
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  db = mongoose.connect('mongodb://localhost/nodepad-development');
 });
 
 app.configure('production', function(){
   app.use(express.logger());
   app.use(express.errorHandler());
+  db = mongoose.connect('mongodb://localhost/nodepad-production');
 });
+
 
 // Routes
 
-app.get('/', routes.list);
+app.get('/', routes.index);
 
 //List
-app.get('/documents.:format', routes.list);
-//app.get('/documents.:format', function(req, res){
-    //Document.find({}, function(err, docs) {
-        //switch(req.params.format) {
-            //case 'json':
-                //res.send(docs.map(function(d) {
-                    //return d.__doc;
-                //}));
-                //break;
-            //default:
-                //res.render('documents/index.jade');
-        //}
-    //});
-//});
+app.get('/documents.:format?', routes_doc.list);
 //Create
-app.post('/documents.:format?', routes.create);
+app.post('/documents.:format?', routes_doc.create);
+app.get('/documents/:id.:format?/new', routes_doc.create);
 //Read
-app.get('/documents/:id.:format?', routes.read);
+app.get('/documents/:id.:format?', routes_doc.read);
 //Update
-app.put('/documents/:id.:format?', routes.update);
+app.put('/documents/:id.:format?', routes_doc.update);
+app.get('/documents/:id.:format?/edit', routes_doc.update);
 //Delete
-app.del('/documents/:id.:format?', routes.del);
+app.del('/documents/:id.:format?', routes_doc.del);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

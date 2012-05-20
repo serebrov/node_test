@@ -1,7 +1,7 @@
 var express = require('express')
   , mongoose = require('mongoose');
-require('../models.js');
-Document = mongoose.model('Document');
+require('../models');
+var Document = mongoose.model('Document');
 
 /*
  * GET list of documents.
@@ -15,7 +15,7 @@ exports.list = function(req, res){
                 }));
                 break;
             default:
-                res.render('views/index.jade');
+                res.render('documents/list', {documents: docs});
         }
     });
 };
@@ -38,7 +38,10 @@ exports.create = function(req, res) {
                 res.send(doc.__doc);
                 break;
             default:
-                res.redirect('/documents');
+                //res.redirect('/documents');
+                res.render('documents/new.jade', {
+                    d: new Document()
+                });
         }
     });
 };
@@ -48,6 +51,18 @@ exports.create = function(req, res) {
  */
 
 exports.update = function(req, res){
+    Document.findById(req.params.id, function(d) {
+        switch (req.params.format) {
+            case 'json':
+                //res.send(doc.__doc);
+                break;
+            default:
+                //res.redirect('/documents');
+                res.render('documents/edit.jade', {
+                    d: d
+                });
+        }
+    });
 };
 
 /*
