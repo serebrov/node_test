@@ -15,7 +15,7 @@ exports.list = function(req, res){
                 }));
                 break;
             default:
-                res.render('documents/list', {documents: docs});
+                res.render('documents/list', {title: "docs", documents: docs});
         }
     });
 };
@@ -24,6 +24,18 @@ exports.list = function(req, res){
  * GET a document.
  */
 exports.read = function(req, res){
+    Document.findById(req.params.id, function(err, d) {
+     switch (req.params.format) {
+       case 'json':
+         res.send(d.__doc);
+       break;
+
+       default:
+         res.render('documents/show.jade', {
+           d: d
+         });
+     }
+   });
 };
 
 /*
@@ -38,11 +50,15 @@ exports.create = function(req, res) {
                 res.send(doc.__doc);
                 break;
             default:
-                //res.redirect('/documents');
-                res.render('documents/new.jade', {
-                    d: new Document()
-                });
+                res.redirect('/documents');
         }
+    });
+};
+
+exports.create_form = function(req, res) {
+    res.render('documents/new.jade', {
+        title: 'New Doc',
+        d: new Document()
     });
 };
 
@@ -51,23 +67,42 @@ exports.create = function(req, res) {
  */
 
 exports.update = function(req, res){
-    Document.findById(req.params.id, function(d) {
-        switch (req.params.format) {
-            case 'json':
-                //res.send(doc.__doc);
-                break;
-            default:
-                //res.redirect('/documents');
-                res.render('documents/edit.jade', {
-                    d: d
-                });
-        }
+    Document.findById(req.body.document.id, function(err, d) {
+        d.title = req.body.document.title;
+        d.data = req.body.document.data;
+        d.save(function() {
+            switch (req.params.format) {
+                case 'json':
+                    res.send(true);
+                    break;
+                default:
+                    res.redirect('/documents');
+            }
+        });
     });
 };
 
+exports.update_form = function(req, res){
+    Document.findById(req.params.id, function(err, d) {
+        res.render('documents/edit.jade', {
+            d: d
+        });
+    });
+};
 /*
  * DELETE a document.
  */
 
 exports.del = function(req, res){
+    Document.findById(req.body.document.id, function(err, d) {
+        d.remove(function() {
+            switch (req.params.format) {
+                case 'json':
+                    res.send(doc.__doc);
+                    break;
+                default:
+                    res.redirect('/documents');
+            }
+        });
+    });
 };

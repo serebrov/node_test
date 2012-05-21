@@ -7,4 +7,9 @@ var Document = new Schema({
   , tags  : String
   , user_id  : {type: Schema.ObjectId, index: true}
 });
+Document
+.virtual('id')
+.get(function(){
+    return this._id.toHexString();
+});
 mongoose.model('Document', Document);

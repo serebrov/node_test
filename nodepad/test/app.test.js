@@ -1,9 +1,16 @@
 process.env.NODE_ENV = 'test';
 
 var app = require('../app')
-  , lastID = ''
   , assert = require('assert')
   , http = require('http');
+
+function createDocument(title, after) {
+  var d = new app.Document({ title: title });
+  d.save(function() {
+    var lastID = d._id.toHexString();
+    after(lastID);
+  });
+}
 
 module.exports = {
 
@@ -41,7 +48,10 @@ module.exports = {
       });
   },
 
-  'GET /documents.json': function(beforeExit) {
+  'GET /documents/id.json': function(beforeExit) {
+  },
+
+  'GET /documents.json and delete them': function(beforeExit) {
     assert.response(app,
       { url: '/documents.json' },
       { status: 200, headers: { 'Content-Type': 'application/json' }},
