@@ -7,6 +7,6 @@ ul
   - for (var d in documents)
     li
       a(class='button', href='/documents/' + documents[d].id + '/edit') Edit
-      a(class='button destroy', href='/documents/' + documents[d].id + '/edit') Delete
+      a(class='button destroy', href='/documents/' + documents[d].id) Delete
       a(class='button', href='/documents/' + documents[d].id)
         = documents[d].title

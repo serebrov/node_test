@@ -70,11 +70,19 @@ module.exports = {
   'GET /': function(beforeExit) {
     assert.response(app,
       { url: '/' },
-      { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }},
+      { status: 302, headers: { 'Content-Type': 'text/html' }},
       function(res) {
-        assert.includes(res.body, '<title>Express</title>');
-        process.exit();
+        //process.exit();
+      });
+  },
+
+  'GET /documents': function(beforeExit) {
+    assert.response(app,
+      { url: '/' },
+      { status: 200, headers: { 'Content-Type': 'text/html' }},
+      function(res) {
+        assert.includes(res.body, '<title>Nodepad</title>');
+        //process.exit();
       });
   }
-
 };

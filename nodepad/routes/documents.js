@@ -94,7 +94,7 @@ exports.update_form = function(req, res){
  */
 
 exports.del = function(req, res){
-    Document.findById(req.body.document.id, function(err, d) {
+    Document.findById(req.params.id, function(err, d) {
         d.remove(function() {
             switch (req.params.format) {
                 case 'json':
