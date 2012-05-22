@@ -23,7 +23,7 @@ module.exports = {
           headers: { 'Content-Type': 'application/json' },
       }, {
           status: 200,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json; charset=utf-8' }
       },
       function(res) {
           ++calls;
@@ -43,8 +43,9 @@ module.exports = {
         data: 'document[title]=test',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }, {
-        status: 302,
-        headers: { 'Content-Type': 'text/plain' }
+        //status: 302,
+        //headers: { 'Content-Type': 'text/plain' }
+        headers: { 'Content-Type': 'text/html' }
       });
   },
 
@@ -54,14 +55,14 @@ module.exports = {
   'GET /documents.json and delete them': function(beforeExit) {
     assert.response(app,
       { url: '/documents.json' },
-      { status: 200, headers: { 'Content-Type': 'application/json' }},
+      { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8' }},
       function(res) {
         var documents = JSON.parse(res.body);
         assert.type(documents, 'object')
 
-        documents.forEach(function(d) {
-          app.Document.findById(d._id, function(document) {
-            document.remove();
+        documents.forEach(function(val, idx, array) {
+          app.Document.findById(val._id, function(err, doc) {
+            doc.remove();
           })
         });
       });
@@ -78,8 +79,9 @@ module.exports = {
 
   'GET /documents': function(beforeExit) {
     assert.response(app,
-      { url: '/' },
-      { status: 200, headers: { 'Content-Type': 'text/html' }},
+      { url: '/documents' },
+      { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }},
+      //{ status: 302, headers: { 'Content-Type': 'text/html' }},
       function(res) {
         assert.includes(res.body, '<title>Nodepad</title>');
         //process.exit();

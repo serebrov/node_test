@@ -63,6 +63,11 @@ app.get('/documents/:id.:format?/edit', routes_doc.update_form);
 //Delete
 app.del('/documents/:id.:format?', routes_doc.del);
 
-app.listen(3000, function(){
-  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-});
+if (!module.parent) {
+    app.listen(3000, function(){
+        console.log(
+            "Express server listening on port %d in %s mode",
+            app.address().port, app.settings.env
+        );
+    });
+}

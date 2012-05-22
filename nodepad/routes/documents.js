@@ -11,7 +11,7 @@ exports.list = function(req, res){
         switch(req.params.format) {
             case 'json':
                 res.send(docs.map(function(d) {
-                    return d.__doc;
+                    return d._doc;
                 }));
                 break;
             default:
@@ -27,7 +27,7 @@ exports.read = function(req, res){
     Document.findById(req.params.id, function(err, d) {
      switch (req.params.format) {
        case 'json':
-         res.send(d.__doc);
+         res.send(d._doc);
        break;
 
        default:
@@ -43,11 +43,12 @@ exports.read = function(req, res){
  */
 
 exports.create = function(req, res) {
-    var doc = new Document(req.body['document']);
-    doc.save(function() {
+    var doc = new Document(req.body.document);
+    doc.save(function(err) {
         switch (req.params.format) {
             case 'json':
-                res.send(doc.__doc);
+                res.send(doc._doc);
+                //res.send(err);
                 break;
             default:
                 res.redirect('/documents');
@@ -98,7 +99,7 @@ exports.del = function(req, res){
         d.remove(function() {
             switch (req.params.format) {
                 case 'json':
-                    res.send(doc.__doc);
+                    res.send(doc._doc);
                     break;
                 default:
                     res.redirect('/documents');
